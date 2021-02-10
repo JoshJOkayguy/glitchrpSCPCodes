@@ -4,7 +4,7 @@ allowedJobs = {
 
 }
 
--- (DO NOT EDIT THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING) Use this table to add new code materials.
+-- (DON'T EDIT THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING) Use this table to add new code materials.
 codeMaterials = {
 ["defcon5"] = "materials/icon16/shading.png",
 } 
