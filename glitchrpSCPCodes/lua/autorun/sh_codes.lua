@@ -1,86 +1,92 @@
 -- Use this table to allow jobs to use the command.
 allowedJobs = {
 ["Citizen"] = true,
-
 }
 
--- (DON'T EDIT THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING) Use this table to add new code materials.
-codeMaterials = {
-["defcon5"] = "materials/icon16/shading.png",
-} 
+-- (DO NOT EDIT THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING)
+local defcon5 = Material("materials/Defcon5.png")
+local defcon4 = Material("materials/Defcon4.png")
+local defcon3 = Material("materials/Defcon3.png")
+local defcon2 = Material("materials/Defcon2.png")
+local defcon1 = Material("materials/Defcon1.png")
+local codesilver = Material("materials/CodeSilver.png")
+local codewhite = Material("materials/CodeWhite.png")
+local codepurple = Material("materials/CodePurple.png")
 
-if SERVER then
-
-	for k,v in ipairs(codeMaterials) do
-		
-		resource.AddFile(v)
-
-	end
-
+if SERVER then	
+		resource.AddFile("materials/Defcon5.png")
+		resource.AddFile("materials/Defcon4.png")
+		resource.AddFile("materials/Defcon3.png")
+		resource.AddFile("materials/Defcon2.png")
+		resource.AddFile("materials/Defcon1.png")
+		resource.AddFile("materials/CodeSilver.png")
+		resource.AddFile("materials/CodeWhite.png")
+		resource.AddFile("materials/CodePurple.png")
 end
 
 if CLIENT then
 
-	local currentCode = 0
+	local function codeChat( chatColor, chatText)
+		for i, ply in ipairs(player.GetAll()) do
+			chat.AddText( chatColor, chatText)
+		end
+	end
+
+	local currentCode = 1
 	
 	hook.Add("OnPlayerChat", "scpCodesCommand", function(ply,strText,bTeam,bDead)
+		
+		local loweredChat = string.lower( strText )
+		local playerInput = string.Explode( " ", loweredChat, false ) 
 
-		if ply != LocalPlayer() then return end
-		
-		local playerInput = string.Explode( " ", strText ) 
-		
 		if playerInput[1] != "!code" or bDead then
 			return
-		else
+		elseif playerInput[1] == "!code" and not allowedJobs[LocalPlayer():getDarkRPVar("job")] then
+			chat.AddText("You don't have permissions to use that command!")
 			return true
-				
-			if allowedJobs[getDarkRPVar("job")] then
-				if playerInput[2] == "defcon5" or ( playerInput[2] == "defcon" and playerInput[3] == "5" ) then
-					currentCode = 1
-					print(strText)
-				elseif playerInput[2] == "defcon4" or ( playerInput[2] == "defcon" and playerInput[3] == "4" ) then
-					currentCode = 2
-					print(strText)	
-				elseif playerInput[2] == "defcon3" or ( playerInput[2] == "defcon" and playerInput[3] == "3" ) then
-					currentCode = 3 
-					print(strText)	
-				elseif playerInput[2] == "defcon2" or ( playerInput[2] == "defcon" and playerInput[3] == "2" ) then
-					currentCode = 4
-					print(strText)	
-				elseif playerInput[2] == "defcon1" or ( playerInput[2] == "defcon" and playerInput[3] == "1" ) then
-					currentCode = 5
-					print(strText)
-				elseif playerInput[2] == "white" then
-					currentCode = 6
-					print(strText)	
-				elseif playerInput[2] == "silver" then
-					currentCode = 7
-					print(strText)	
-				elseif playerInput[2] == "purple" then
-					currentCode = 8
-					print(strText)
-				else
-					chat.AddText("Arguments: defcon5, defcon4, defcon3, defcon2, defcon1, white, purple, silver")
-					chat.PlaySound()
-				end
-			else
-				chat.AddText("You don't have permission to use this command!")
-				chat.PlaySound()
+		elseif allowedJobs[LocalPlayer():getDarkRPVar("job")] and playerInput[1] == "!code" and playerInput[2] == nil then
+			chat.AddText("To use this command add one of the following arguments: defcon 5, defcon 4, defcon 3, defcon 2, defcon 1, silver, white, or purple")
+			return true
+		elseif playerInput[1] == "!code" and allowedJobs[LocalPlayer():getDarkRPVar("job")] then
+			if playerInput[2] == "defcon5" or (playerInput[2] == "defcon" and playerInput[3] == "5") then
+				codeChat(Color(34,235,16),"The site is now in Defcon 5, perform normal duties.")
+				currentCode = 1
+				return true
+			elseif playerInput[2] == "defcon4" then
+				codeChat( Color(224,207,47), "The site is blah blah")
+				currentCode = 8
+				return true
 			end
 		end
 
 	end )
 	
-	hook.Add("HUDPaint", "DrawSCPCode", function()
-		surface.drawTexturedRect( 200, 200, 300, 100)
-		for i, ply in ipairs( player.GetAll() ) do
-			if currentCode == 1 then
-				surface.SetMaterial( codeMaterials["defcon5"] )
-			else
-				print("The current code is not set.")
-			end
+	hook.Add("HUDPaint", "PaintCode", function()
+	
+		surface.SetDrawColor(0,0,0,0)
+
+		if currentCode == 1 then
+			surface.SetMaterial(defcon5)
+		elseif currentCode == 2 then
+			surface.SetMaterial(defcon4)
+		elseif currentCode == 3 then
+			surface.SetMaterial(defcon3)
+		elseif currentCode == 4 then
+			surface.SetMaterial(defcon2)
+		elseif currentCode == 5 then
+			surface.SetMaterial(defcon1)
+		elseif currentCode == 6 then
+			surface.SetMaterial(codewhite)
+		elseif currentCode == 7 then
+			surface.SetMaterial(codesilver)
+		elseif currentCode == 8 then
+			surface.SetMaterial(codepurple)
 		end
-		
+
+
+		surface.DrawTexturedRect(ScrW() * .74, ScrH() * -.14, ScrW() * 512/1920, ScrH() * 440/1080)
+
+
 	end )
 
 end
