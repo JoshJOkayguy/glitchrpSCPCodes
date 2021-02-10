@@ -73,10 +73,12 @@ if CLIENT then
 	
 	hook.Add("HUDPaint", "DrawSCPCode", function()
 		surface.drawTexturedRect( 200, 200, 300, 100)
-		if currentCode == 1 then
-			surface.SetMaterial( codeMaterials["defcon5"] )
-		else
-			print("The current code is not set.")
+		for i, ply in ipairs( player.GetAll() ) do
+			if currentCode == 1 then
+				surface.SetMaterial( codeMaterials["defcon5"] )
+			else
+				print("The current code is not set.")
+			end
 		end
 		
 	end )
