@@ -22,15 +22,29 @@ if SERVER then
 		resource.AddFile("materials/CodeSilver.png")
 		resource.AddFile("materials/CodeWhite.png")
 		resource.AddFile("materials/CodePurple.png")
+
+	util.AddNetworkString("sendVars")
+	util.AddNetworkString("codeChat")
+
+	net.Receive("sendVars", function(len, ply)
+		local	cText = net.ReadString()
+		for i, ply in ipairs(player.GetAll()) do
+			ply:ChatPrint(cText)
+		end
+
+	end )
 end
 
 if CLIENT then
-	
-	local function codeChat( chatColor, chatText)
-		for i, ply in ipairs(player.GetAll()) do
-			chat.AddText( chatColor, chatText)
-		end
+
+	local function codeChat( chatColor, chatText) -- Colors are unused for now. Will probably be used in the future.
+
+		net.Start("sendVars")
+			net.WriteString(chatText)
+		net.SendToServer()
+
 	end
+
 
 	local currentCode = 1
 	
