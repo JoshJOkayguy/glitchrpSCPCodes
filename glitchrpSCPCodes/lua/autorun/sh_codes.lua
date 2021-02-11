@@ -2,8 +2,8 @@
 allowedJobs = {
 ["Citizen"] = true,
 }
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
--- (DO NOT EDIT THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING)
 local defcon5 = Material("materials/Defcon5.png")
 local defcon4 = Material("materials/Defcon4.png")
 local defcon3 = Material("materials/Defcon3.png")
@@ -25,7 +25,7 @@ if SERVER then
 end
 
 if CLIENT then
-
+	
 	local function codeChat( chatColor, chatText)
 		for i, ply in ipairs(player.GetAll()) do
 			chat.AddText( chatColor, chatText)
@@ -52,8 +52,32 @@ if CLIENT then
 				codeChat(Color(34,235,16),"The site is now in Defcon 5, perform normal duties.")
 				currentCode = 1
 				return true
-			elseif playerInput[2] == "defcon4" then
-				codeChat( Color(224,207,47), "The site is blah blah")
+			elseif playerInput[2] == "defcon4" or (playerInput[2] == "defcon" and playerInput[3] == "4") then
+				codeChat( Color(224,207,47), "The site is now in Defcon 4, exercise caution.")
+				currentCode = 2
+				return true
+			elseif playerInput[2] == "defcon3" or (playerInput[2] == "defcon" and playerInput[3] == "3") then
+				codeChat( Color(221,126,18), "The site is now in Defcon 3, exercise combat readiness.")
+				currentCode = 3
+				return true
+			elseif playerInput[2] == "defcon2" or (playerInput[2] == "defcon" and playerInput[3] == "2") then
+				codeChat( Color(221,18,18), "The site is now in Defcon 2, prepare to enter combat.")
+				currentCode = 4
+				return true
+			elseif playerInput[2] == "defcon1" or (playerInput[2] == "defcon" and playerInput[3] == "1") then
+				codeChat( Color(0,0,0), "The site is now in Defcon 1, please evacuate the site.")
+				currentCode = 5
+				return true
+			elseif playerInput[2] == "white" then
+				codeChat( Color(255,255,255), "The site is now in code white, D-Block is under lockdown.")
+				currentCode = 6
+				return true
+			elseif playerInput[2] == "silver" then
+				codeChat( Color(122,120,116), "The site is now in code silver, Gate A has been breached and there is a raid on the facility.")
+				currentCode = 7
+				return true
+			elseif playerInput[2] == "purple" then
+				codeChat( Color(116,35,141), "The site is now in code purple, retrieving the captured personnel is our top priority.")
 				currentCode = 8
 				return true
 			end
@@ -61,32 +85,34 @@ if CLIENT then
 
 	end )
 	
+	local codePosY = 0
 	hook.Add("HUDPaint", "PaintCode", function()
-	
-		surface.SetDrawColor(0,0,0,0)
-
+		surface.SetDrawColor(Color(255,255,255))
 		if currentCode == 1 then
 			surface.SetMaterial(defcon5)
+			codePosY = ScrH() * -.07
 		elseif currentCode == 2 then
 			surface.SetMaterial(defcon4)
+			codePosY = ScrH() * -.08
 		elseif currentCode == 3 then
 			surface.SetMaterial(defcon3)
+			codePosY = ScrH() * -.08
 		elseif currentCode == 4 then
 			surface.SetMaterial(defcon2)
+			codePosY = ScrH() * -.085
 		elseif currentCode == 5 then
 			surface.SetMaterial(defcon1)
+			codePosY = ScrH() * -.075
 		elseif currentCode == 6 then
 			surface.SetMaterial(codewhite)
+			codePosY = ScrH() * -.065
 		elseif currentCode == 7 then
 			surface.SetMaterial(codesilver)
+			codePosY = ScrH() * -.065
 		elseif currentCode == 8 then
 			surface.SetMaterial(codepurple)
+			codePosY = ScrH() * -.07
 		end
-
-
-		surface.DrawTexturedRect(ScrW() * .74, ScrH() * -.14, ScrW() * 512/1920, ScrH() * 440/1080)
-
-
+		surface.DrawTexturedRect(ScrW() * .76, codePosY, 471, 244)
 	end )
-
-end 
+end
