@@ -24,7 +24,9 @@ if SERVER then
 		resource.AddFile("materials/CodePurple.png")
 
 	util.AddNetworkString("sendVars")
-	util.AddNetworkString("codeChat")
+	util.AddNetworkString("receiveInts")
+	util.AddNetworkString("writeData")
+
 
 	net.Receive("sendVars", function(len, ply)
 		local	cText = net.ReadString()
@@ -33,6 +35,18 @@ if SERVER then
 		end
 
 	end )
+
+	local currentCodeSV = 1
+	net.Receive("receiveInts", function(len, ply)
+		currentCodeSV = net.ReadInt( 5 )
+		net.Start("writeData")
+			net.WriteInt( currentCodeSV, 5 )
+		net.Broadcast()
+	end )
+
+
+
+
 end
 
 if CLIENT then
@@ -44,9 +58,6 @@ if CLIENT then
 		net.SendToServer()
 
 	end
-
-
-	local currentCode = 1
 	
 	hook.Add("OnPlayerChat", "scpCodesCommand", function(ply,strText,bTeam,bDead)
 		
@@ -64,41 +75,62 @@ if CLIENT then
 		elseif playerInput[1] == "!code" and allowedJobs[LocalPlayer():getDarkRPVar("job")] then
 			if playerInput[2] == "defcon5" or (playerInput[2] == "defcon" and playerInput[3] == "5") then
 				codeChat(Color(34,235,16),"The site is now in Defcon 5, perform normal duties.")
-				currentCode = 1
+				net.Start("receiveInts")
+					net.WriteInt(1, 5)
+				net.SendToServer()
 				return true
 			elseif playerInput[2] == "defcon4" or (playerInput[2] == "defcon" and playerInput[3] == "4") then
 				codeChat( Color(224,207,47), "The site is now in Defcon 4, exercise caution.")
-				currentCode = 2
+				net.Start("receiveInts")
+					net.WriteInt(2, 5)
+				net.SendToServer()
 				return true
 			elseif playerInput[2] == "defcon3" or (playerInput[2] == "defcon" and playerInput[3] == "3") then
 				codeChat( Color(221,126,18), "The site is now in Defcon 3, exercise combat readiness.")
-				currentCode = 3
+				net.Start("receiveInts")
+					net.WriteInt(3, 5)
+				net.SendToServer()
 				return true
 			elseif playerInput[2] == "defcon2" or (playerInput[2] == "defcon" and playerInput[3] == "2") then
 				codeChat( Color(221,18,18), "The site is now in Defcon 2, prepare to enter combat.")
-				currentCode = 4
+				net.Start("receiveInts")
+					net.WriteInt(4, 5)
+				net.SendToServer()
 				return true
 			elseif playerInput[2] == "defcon1" or (playerInput[2] == "defcon" and playerInput[3] == "1") then
 				codeChat( Color(0,0,0), "The site is now in Defcon 1, please evacuate the site.")
-				currentCode = 5
+				net.Start("receiveInts")
+					net.WriteInt(5, 5)
+				net.SendToServer()
 				return true
 			elseif playerInput[2] == "white" then
 				codeChat( Color(255,255,255), "The site is now in code white, D-Block is under lockdown.")
-				currentCode = 6
+				net.Start("receiveInts")
+					net.WriteInt(6, 5)
+				net.SendToServer()
 				return true
 			elseif playerInput[2] == "silver" then
 				codeChat( Color(122,120,116), "The site is now in code silver, Gate A has been breached and there is a raid on the facility.")
-				currentCode = 7
+				net.Start("receiveInts")
+					net.WriteInt(7, 5)
+				net.SendToServer()
 				return true
 			elseif playerInput[2] == "purple" then
 				codeChat( Color(116,35,141), "The site is now in code purple, retrieving the captured personnel is our top priority.")
-				currentCode = 8
+				net.Start("receiveInts")
+					net.WriteInt(8, 5)
+				net.SendToServer()
 				return true
 			end
 		end
 
 	end )
 	
+	local currentCode = 1
+	net.Receive("writeData", function()
+		currentCode = net.ReadInt(5)
+	end )
+
 	local codePosY = 0
 	hook.Add("HUDPaint", "PaintCode", function()
 		surface.SetDrawColor(Color(255,255,255))
