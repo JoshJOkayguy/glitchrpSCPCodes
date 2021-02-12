@@ -22,7 +22,13 @@ if SERVER then
 		resource.AddFile("materials/CodeSilver.png")
 		resource.AddFile("materials/CodeWhite.png")
 		resource.AddFile("materials/CodePurple.png")
-
+	
+		resource.AddFile("sound/glitchCodes/codechange.wav") -- Sound testing
+		local filter = RecipientFilter()
+		filter:AddAllPlayers()
+		local codeChange = CreateSound( game.GetWorld(), "sound/glitchCodes/codechange.wav", filter )
+		codeChange:SetSoundLevel(0)
+		
 	util.AddNetworkString("sendVars")
 	util.AddNetworkString("receiveInts")
 	util.AddNetworkString("writeData")
@@ -32,6 +38,12 @@ if SERVER then
 		local	cText = net.ReadString()
 		for i, ply in ipairs(player.GetAll()) do
 			ply:ChatPrint(cText)
+		end
+		if codeChange then
+			if CLIENT then
+				codeChange:Stop()
+			end	
+			codeChange:Play()
 		end
 
 	end )
