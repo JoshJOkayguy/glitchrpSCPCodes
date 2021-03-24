@@ -26,13 +26,16 @@ if SERVER then
 	util.AddNetworkString("sendVars")
 	util.AddNetworkString("receiveInts")
 	util.AddNetworkString("writeData")
+	util.AddNetworkString("broadcastCode")
 
 
 	net.Receive("sendVars", function(len, ply)
-		local	cText = net.ReadString()
-		for i, ply in ipairs(player.GetAll()) do
-			ply:ChatPrint(cText)
-		end
+		local cColor = net.ReadString()
+		local cText = net.ReadString()
+		net.Start("broadcastCode")
+			net.WriteString(cColor)
+			net.WriteString(cText)
+		net.Broadcast()
 
 	end )
 
@@ -54,10 +57,17 @@ if CLIENT then
 	local function codeChat( chatColor, chatText) -- Colors are unused for now. Will probably be used in the future.
 
 		net.Start("sendVars")
+			net.WriteString(chatColor)
 			net.WriteString(chatText)
 		net.SendToServer()
 
 	end
+	
+	net.Receive("broadcastCode", function()
+		local cColor = net.Readstring()
+		local cText = net.ReadString()
+		chat.AddText(cColor, cText)
+	end )
 	
 	hook.Add("OnPlayerChat", "scpCodesCommand", function(ply,strText,bTeam,bDead)
 		
@@ -130,35 +140,39 @@ if CLIENT then
 	net.Receive("writeData", function()
 		currentCode = net.ReadInt(5)
 	end )
+	
+	local function setCode(code)
+		if code == 1 then
+			surface.SetMaterial(defcon5)
+			codePosY = ScrH() * -.07
+		elseif code == 2 then
+			surface.SetMaterial(defcon4)
+			codePosY = ScrH() * -.08
+		elseif code == 3 then
+			surface.SetMaterial(defcon3)
+			codePosY = ScrH() * -.08
+		elseif code == 4 then
+			surface.SetMaterial(defcon2)
+			codePosY = ScrH() * -.085
+		elseif code == 5 then
+			surface.SetMaterial(defcon1)
+			codePosY = ScrH() * -.075
+		elseif code == 6 then
+			surface.SetMaterial(codewhite)
+			codePosY = ScrH() * -.065
+		elseif code == 7 then
+			surface.SetMaterial(codesilver)
+			codePosY = ScrH() * -.065
+		elseif code == 8 then
+			surface.SetMaterial(codepurple)
+			codePosY = ScrH() * -.07
+		end
+	end
 
 	local codePosY = 0
 	hook.Add("HUDPaint", "PaintCode", function()
 		surface.SetDrawColor(Color(255,255,255))
-		if currentCode == 1 then
-			surface.SetMaterial(defcon5)
-			codePosY = ScrH() * -.07
-		elseif currentCode == 2 then
-			surface.SetMaterial(defcon4)
-			codePosY = ScrH() * -.08
-		elseif currentCode == 3 then
-			surface.SetMaterial(defcon3)
-			codePosY = ScrH() * -.08
-		elseif currentCode == 4 then
-			surface.SetMaterial(defcon2)
-			codePosY = ScrH() * -.085
-		elseif currentCode == 5 then
-			surface.SetMaterial(defcon1)
-			codePosY = ScrH() * -.075
-		elseif currentCode == 6 then
-			surface.SetMaterial(codewhite)
-			codePosY = ScrH() * -.065
-		elseif currentCode == 7 then
-			surface.SetMaterial(codesilver)
-			codePosY = ScrH() * -.065
-		elseif currentCode == 8 then
-			surface.SetMaterial(codepurple)
-			codePosY = ScrH() * -.07
-		end
+		setCode(currentCode)
 		surface.DrawTexturedRect(ScrW() * .76, codePosY, 471, 244)
 	end )
 end
