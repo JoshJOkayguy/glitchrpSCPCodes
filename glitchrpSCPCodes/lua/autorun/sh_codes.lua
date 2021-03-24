@@ -141,6 +141,7 @@ if CLIENT then
 		currentCode = net.ReadInt(5)
 	end )
 	
+	local codePosY = 0
 	local function setCode(code)
 		if code == 1 then
 			surface.SetMaterial(defcon5)
@@ -169,7 +170,6 @@ if CLIENT then
 		end
 	end
 
-	local codePosY = 0
 	hook.Add("HUDPaint", "PaintCode", function()
 		surface.SetDrawColor(Color(255,255,255))
 		setCode(currentCode)
