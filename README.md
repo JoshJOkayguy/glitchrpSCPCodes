@@ -16,4 +16,4 @@ Type !code then
 - purple
 - silver
 
-You must be a certain job specified in a table within [the code](glitchrpSCPCodes/lua/autorun/sh_codes.lua) to be able to use these commands. 
+You must be a certain job specified in a table within [the code](glitchrpSCPCodes/lua/autorun/sh_SCPcodes.lua) to be able to use these commands. 
